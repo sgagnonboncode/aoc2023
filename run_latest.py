@@ -5,7 +5,7 @@ from importlib import import_module
 sys.path.append("./src")
 
 
-solvers = glob("./src/solvers/day*.py")
+solvers = sorted(glob("./src/solvers/day*.py"))
 latest = solvers[-1]
 
 solver_name = latest.split("/")[-1][:-3]
