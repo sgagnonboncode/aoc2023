@@ -1,5 +1,5 @@
 from common.file_helpers import read_lines
-from common.extract_numbers import extract_numbers
+from common.extract_numbers import extract_numbers_with_index
 
 
 def schematic_special_character(char: str) -> bool:
@@ -103,7 +103,7 @@ def solve_part2() -> int:
     lines = [line.strip() for line in read_lines("input/day03/part1.txt")]
     # lines = [ line.strip()  for line in read_lines("input/day03/example.txt")]
 
-    numbers_map = [extract_numbers(line) for line in lines]
+    numbers_map = [extract_numbers_with_index(line) for line in lines]
 
     max_y = len(lines)
     max_x = len(lines[0])
