@@ -21,7 +21,7 @@ class ConversionMap:
     def convert(self, source: int) -> int:
         for rule in self.rules:
             min_source = rule["source"]
-            max_source = rule["source"] + rule["size"]
+            max_source = rule["source"] + rule["size"] - 1
 
             if source < min_source or source > max_source:
                 continue
@@ -29,18 +29,6 @@ class ConversionMap:
             return rule["destination"] + (source - min_source)
 
         return source
-
-    def reverse_map(self, destination: int) -> int:
-        for rule in self.rules:
-            min_destination = rule["destination"]
-            max_destination = rule["destination"] + rule["size"]
-
-            if destination < min_destination or destination > max_destination:
-                continue
-
-            return rule["source"] + (destination - min_destination)
-
-        return destination
 
 
 def evaluate_seed(almanac: dict[str, ConversionMap], seed: int) -> int:
@@ -143,7 +131,7 @@ def solve_part2() -> int:
 
                 for rule in almanac[current_type].rules:
                     min_source = rule["source"]
-                    max_source = rule["source"] + rule["size"]
+                    max_source = rule["source"] + rule["size"] - 1
 
                     if current_value < min_source or current_value > max_source:
                         continue
@@ -151,6 +139,7 @@ def solve_part2() -> int:
                     rule_dist = max_source - current_value
                     if rule_dist < max_dist:
                         # print("Discontinuity found in type",current_type)
+                        # print("Max dist",max_dist,"Rule dist",rule_dist)
                         has_discontinuity = True
 
                         seed_ranges[i] = (seed_start, seed_start + rule_dist)
@@ -163,8 +152,7 @@ def solve_part2() -> int:
 
     local_min_locations = []
     for seed_range in seed_ranges:
-        # evaluate both ends of the continuous range
+        # evaluate the first value of the continuous range since it's the minimum by definition
         local_min_locations.append(evaluate_seed(almanac, seed_range[0]))
-        local_min_locations.append(evaluate_seed(almanac, seed_range[1]))
 
     return min(local_min_locations)
