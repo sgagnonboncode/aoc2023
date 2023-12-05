@@ -36,23 +36,17 @@ def evaluate_seed(almanac: dict[str, ConversionMap], seed: int) -> int:
     current_index = seed
 
     while current_type != "location":
-        next_index = almanac[current_type].convert(current_index)
-        next_type = almanac[current_type].to_type
-
-        # print("From",current_type,current_index,"To",next_type, next_index)
-
-        current_index = next_index
-        current_type = next_type
+        current_index = almanac[current_type].convert(current_index)
+        current_type = almanac[current_type].to_type
 
     return current_index
 
 
 def parse_almanac(lines: list[str]) -> dict[str, ConversionMap]:
-    # skip two lines
-
-    maps = {}
-
+    maps: dict[str, ConversionMap] = {}
     active_type: str = None
+
+    # skip two first lines
     for line in lines[1:]:
         if len(line) == 0:
             active_type = None
@@ -88,10 +82,12 @@ def solve_part2() -> int:
     seeds_nums = extract_numbers(lines[0])
     almanac = parse_almanac(lines)
 
-    # create a list of ranges to evaluate and affine it for every discontinuity discovered
-    seed_ranges = []
+    # by definition, the rules are monotonous functions ( strictly increating ).
+    # we can find the minimum by evaluating the first value of each range once we have removed all discontinuities.
+    # this cleaning is done by splitting the ranges into smaller ones at the discontinuity points
 
-    # initial input
+    # create the default list of ranges to evaluate
+    seed_ranges = []
     for i in range(0, len(seeds_nums), 2):
         seed_start = seeds_nums[i]
         seed_range = seeds_nums[i + 1]
@@ -99,7 +95,6 @@ def solve_part2() -> int:
         seed_ranges.append((seed_start, seed_start + seed_range))
 
     # iterate over the rules and look for discontinuities
-
     has_discontinuity = True
     nb_pass = 0
     while has_discontinuity:
@@ -123,9 +118,6 @@ def solve_part2() -> int:
             current_value = seed_start
 
             while current_type != "location":
-                next_value = almanac[current_type].convert(current_value)
-                next_type = almanac[current_type].to_type
-
                 for rule in almanac[current_type].rules:
                     min_source = rule["source"]
                     max_source = rule["source"] + rule["size"] - 1
@@ -134,22 +126,24 @@ def solve_part2() -> int:
                         continue
 
                     rule_dist = max_source - current_value
-                    if rule_dist < max_dist:
-                        if rule_dist < minimum_interval:
-                            minimum_interval = rule_dist
 
-                current_type = next_type
-                current_value = next_value
+                    # check if rule has less remaining range than alloted.
+                    if rule_dist < minimum_interval:
+                        # new disconuity found
+                        minimum_interval = rule_dist
+
+                current_value = almanac[current_type].convert(current_value)
+                current_type = almanac[current_type].to_type
 
             if minimum_interval < max_dist:
                 # print("Discontinuity found. Max dist:",max_dist,"Min interval",minimum_interval)
                 has_discontinuity = True
+                # split the range into two at the discontinuity point
                 seed_ranges[i] = (seed_start, seed_start + minimum_interval)
                 seed_ranges.append((seed_start + minimum_interval + 1, seed_end))
 
-    local_min_locations = []
-    for seed_range in seed_ranges:
-        # evaluate the first value of the continuous range since it's the minimum by definition
-        local_min_locations.append(evaluate_seed(almanac, seed_range[0]))
-
+    # only evaluate the first value of the monotonous ranges since it's the minimum by definition
+    local_min_locations = [
+        evaluate_seed(almanac, seed_range[0]) for seed_range in seed_ranges
+    ]
     return min(local_min_locations)
