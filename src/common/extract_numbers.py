@@ -2,15 +2,17 @@ def extract_numbers(line: str) -> list[(int, int)]:
     number_map = []
 
     accumulator = 0
+    entered = False
     for i in range(0, len(line)):
         char = line[i]
 
         if char.isdigit():
+            entered = True
             accumulator *= 10
             accumulator += int(char)
 
         else:
-            if accumulator > 0:
+            if entered:
                 number_map.append(accumulator)
             accumulator = 0
     if accumulator > 0:
