@@ -101,31 +101,28 @@ def solve_part2() -> int:
     # iterate over the rules and look for discontinuities
 
     has_discontinuity = True
+    nb_pass = 0
     while has_discontinuity:
+        nb_pass += 1
+        # print("Discontinuity pass #",nb_pass, "with",len(seed_ranges),"ranges")
         seed_ranges.sort(key=lambda x: x[0])
 
         has_discontinuity = False
 
         for i in range(0, len(seed_ranges)):
-            if has_discontinuity:
-                break
-
             seed_range = seed_ranges[i]
             seed_start = seed_range[0]
             seed_end = seed_range[1]
 
             max_dist = seed_end - seed_start
+            minimum_interval = max_dist
 
             # print("Checking range",seed_range,"with max dist",max_dist)
 
             current_type = "seed"
-
             current_value = seed_start
 
             while current_type != "location":
-                if has_discontinuity:
-                    break
-
                 next_value = almanac[current_type].convert(current_value)
                 next_type = almanac[current_type].to_type
 
@@ -138,17 +135,17 @@ def solve_part2() -> int:
 
                     rule_dist = max_source - current_value
                     if rule_dist < max_dist:
-                        # print("Discontinuity found in type",current_type)
-                        # print("Max dist",max_dist,"Rule dist",rule_dist)
-                        has_discontinuity = True
-
-                        seed_ranges[i] = (seed_start, seed_start + rule_dist)
-                        seed_ranges.append((seed_start + rule_dist + 1, seed_end))
-
-                        break
+                        if rule_dist < minimum_interval:
+                            minimum_interval = rule_dist
 
                 current_type = next_type
                 current_value = next_value
+
+            if minimum_interval < max_dist:
+                # print("Discontinuity found. Max dist:",max_dist,"Min interval",minimum_interval)
+                has_discontinuity = True
+                seed_ranges[i] = (seed_start, seed_start + minimum_interval)
+                seed_ranges.append((seed_start + minimum_interval + 1, seed_end))
 
     local_min_locations = []
     for seed_range in seed_ranges:
