@@ -17,15 +17,16 @@ INPUT_FILE = "input/day06/part1.txt"
 
 #     return possible_speeds
 
+
 def solve_race_permuttations_smart(duration: int, record: int) -> int:
     # find the minimum boost time 'i' to reach the record
-    
+
     # record = (duration -i) * i
     # ->    record = duration * i - i^2
     # ->   i^2 - duration * i + record = 0
 
     # solve the quadratic equation
-    i = int ((duration - math.sqrt( math.pow(duration,2) - 4 * record)) / 2)
+    i = int((duration - math.sqrt(math.pow(duration, 2) - 4 * record)) / 2)
 
     # we want to beat the record !
     min_boost_time = i + 1
@@ -37,7 +38,7 @@ def solve_race_permuttations_smart(duration: int, record: int) -> int:
 
     # this is because the distance terms are  (duration -i) * i   and  (duration - (duration -i)) * (duration -i) -> (i) * (duration - i )
 
-    return duration - (2*min_boost_time ) + 1
+    return duration - (2 * min_boost_time) + 1
 
 
 def solve_part1() -> int:
@@ -48,7 +49,9 @@ def solve_part1() -> int:
 
     permutations = []
     for r in range(0, len(race_durations)):
-        permutations.append(solve_race_permuttations_smart(race_durations[r], race_record_distances[r]))
+        permutations.append(
+            solve_race_permuttations_smart(race_durations[r], race_record_distances[r])
+        )
 
     score = 1
     for perm in permutations:
