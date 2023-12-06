@@ -25,8 +25,8 @@ def solve_race_permuttations_smart(duration: int, record: int) -> int:
     # ->    record = duration * i - i^2
     # ->   i^2 - duration * i + record = 0
 
-    # solve the quadratic equation
-    i = int((duration - math.sqrt(math.pow(duration, 2) - 4 * record)) / 2)
+    # solve the quadratic equation  ( -b +- sqrt(b^2 - 4ac) ) / 2a ,  a = 1, b = -duration, c = record
+    i = math.floor((duration - math.sqrt(math.pow(duration, 2) - 4 * record)) / 2)
 
     # we want to beat the record !
     min_boost_time = i + 1
@@ -37,7 +37,6 @@ def solve_race_permuttations_smart(duration: int, record: int) -> int:
     # Start    wwwwwwww    End
 
     # this is because the distance terms are  (duration -i) * i   and  (duration - (duration -i)) * (duration -i) -> (i) * (duration - i )
-
     return duration - (2 * min_boost_time) + 1
 
 
