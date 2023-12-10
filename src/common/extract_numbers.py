@@ -47,3 +47,7 @@ def extract_numbers_with_index(line: str) -> list[(int, int)]:
         number_map.append((number_index, accumulator))
 
     return number_map
+
+
+def extract_real_number(line: str) -> list[int]:
+    return [int(n) for n in line.split()]
